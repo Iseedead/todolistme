@@ -30,13 +30,13 @@ public class TestTest extends BaseTest {
     }
 
     @Test
-    public void CategoryCreationTest() throws InterruptedException {
+    public void categoryCreationTest() throws InterruptedException {
         page(MainPage.class).createNewCategory(categoryName);
         page(ListManagerPanel.class).getNodeByName(categoryName).should(be(visible));
     }
 
     @Test
-    public void ListCreationTest() throws InterruptedException {
+    public void listCreationTest() throws InterruptedException {
         page(MainPage.class).createNewList(listName);
         page(ListManagerPanel.class).getNodeByName(listName).should(be(visible));
     }
@@ -59,22 +59,22 @@ public class TestTest extends BaseTest {
 
     @Test
     public void toDoListIntegrationTest() throws InterruptedException {
-        page(MainPage.class).createNewCategory(categoryName);
-        page(MainPage.class).createNewList(listName);
-        page(ListManagerPanel.class).moveListToCategory(listName, categoryName);
-
-        page(ListManagerPanel.class).goToList("Today's Tasks");
-        page(MainPage.class).createNewTask(taskName);
-        page(ToDoPanel.class).moveToList(taskName, listName);
-        page(ListManagerPanel.class).goToList(listName);
-
-        page(ToDoPanel.class).getToDoByName(taskName).should(be(visible));
-
-        page(ToDoPanel.class).completeTask(taskName);
-        page(CompletePanel.class).getToDoByName(taskName).should(be(visible));
-
-        page(CompletePanel.class).deleteTodoByName(taskName);
-        page(CompletePanel.class).getCompletes().shouldHaveSize(0);
+        CompletePanel cPanel = page(CompletePanel.class);
+        MainPage mPage = page(MainPage.class);
+        ListManagerPanel lmPanel = page(ListManagerPanel.class);
+        ToDoPanel tdPanel = page(ToDoPanel.class);
+        mPage.createNewCategory(categoryName);
+        mPage.createNewList(listName);
+        lmPanel.moveListToCategory(listName, categoryName);
+        lmPanel.goToList("Today's Tasks");
+        mPage.createNewTask(taskName);
+        tdPanel.moveToList(taskName, listName);
+        lmPanel.goToList(listName);
+        tdPanel.getToDoByName(taskName).should(be(visible));
+        tdPanel.completeTask(taskName);
+        cPanel.getToDoByName(taskName).should(be(visible));
+        cPanel.deleteTodoByName(taskName);
+        cPanel.getCompletes().shouldHaveSize(0);
     }
 
 }
