@@ -9,47 +9,48 @@ import org.testng.annotations.Test;
 
 import static com.codeborne.selenide.Selenide.page;
 
-
 public class TestTest extends BaseTest {
 
     private final String taskName = "New Task #1";
     private final String listName = "New List #1";
     private final String categoryName = "New Category #1";
 
-    @Test
+    @Test(description = "Create Task")
     public void taskCreationTest() throws InterruptedException {
         page(MainPage.class).createNewTask(taskName);
         Assert.assertTrue(page(ToDoPanel.class).getToDoByName(taskName).isDisplayed());
     }
 
-    @Test
+    @Test(description = "Complete Task")
     public void taskCompletionTest() throws InterruptedException {
         page(MainPage.class).createNewTask(taskName);
         page(ToDoPanel.class).completeTask(taskName);
         Assert.assertTrue(page(CompletePanel.class).getToDoByName(taskName).isDisplayed());
     }
 
-    @Test
+    @Test(description = "Create Category")
     public void categoryCreationTest() throws InterruptedException {
         page(MainPage.class).createNewCategory(categoryName);
         Assert.assertTrue(page(ListManagerPanel.class).getNodeByName(categoryName).isDisplayed());
     }
 
-    @Test
+    @Test(description = "Create List")
     public void listCreationTest() throws InterruptedException {
         page(MainPage.class).createNewList(listName);
         Assert.assertTrue(page(ListManagerPanel.class).getNodeByName(listName).isDisplayed());
     }
 
-    @Test
+    @Test(description = "Move List to Category")
     public void listMovingTest() throws InterruptedException {
-        page(MainPage.class).createNewCategory(categoryName);
-        page(MainPage.class).createNewList(listName);
-        page(ListManagerPanel.class).moveListToCategory(listName, categoryName);
-        Assert.assertEquals(page(ListManagerPanel.class).containingCategory(listName), categoryName);
+        MainPage mPage = page(MainPage.class);
+        ListManagerPanel lmPanel = page(ListManagerPanel.class);
+        mPage.createNewCategory(categoryName);
+        mPage.createNewList(listName);
+        lmPanel.moveListToCategory(listName, categoryName);
+        Assert.assertEquals(lmPanel.containingCategory(listName), categoryName);
     }
 
-    @Test
+    @Test(description = "Base functionality test")
     public void toDoListIntegrationTest() throws InterruptedException {
         CompletePanel cPanel = page(CompletePanel.class);
         MainPage mPage = page(MainPage.class);

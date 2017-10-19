@@ -9,13 +9,13 @@ import static com.codeborne.selenide.Selenide.open;
 
 public abstract class BaseTest {
 
-    @BeforeMethod
+    @BeforeMethod(description = "Init Chrome, go to todolistme.net")
     public void preCondition() {
         Configuration.browser = "chrome";
         open("http://todolistme.net/");
     }
 
-    @AfterMethod
+    @AfterMethod(description = "Close Chrome Window")
     public void postCondition() {
         close();
     }

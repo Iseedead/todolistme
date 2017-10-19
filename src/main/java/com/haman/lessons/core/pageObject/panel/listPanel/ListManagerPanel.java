@@ -2,6 +2,7 @@ package com.haman.lessons.core.pageObject.panel.listPanel;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import io.qameta.allure.Step;
 import org.openqa.selenium.support.FindBy;
 
 import static com.codeborne.selenide.Condition.text;
@@ -17,10 +18,12 @@ public class ListManagerPanel implements ListManagerPanelable {
     }
 
     @Override
+    @Step("Moving List: {listName} to Category: {categoryName}")
     public void moveListToCategory(String listName, String categoryName) {
         getNodeByName(listName).dragAndDropTo(getNodeByName(categoryName).$x("../../ul"));
     }
 
+    @Step("Switching to List: {listName}")
     public void goToList(String listName) {
         getNodeByName(listName).$x("span").click();
     }
