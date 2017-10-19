@@ -1,4 +1,6 @@
 .idea
 haman.iml
 target
+.allure
 build
+/allure-results/
