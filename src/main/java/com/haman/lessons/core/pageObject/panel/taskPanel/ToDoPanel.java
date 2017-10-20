@@ -6,6 +6,11 @@ import com.haman.lessons.core.pageObject.panel.listPanel.ListManagerPanel;
 import io.qameta.allure.Step;
 import org.openqa.selenium.support.FindBy;
 
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.page;
 
@@ -13,6 +18,14 @@ public class ToDoPanel implements ToDoListPanelable {
 
     @FindBy(xpath = "//ul[@id='mytodos']/li")
     private ElementsCollection toDos;
+
+    public ElementsCollection getToDos() {
+        return toDos;
+    }
+
+    public LinkedList<String> getToDosText() {
+        return new LinkedList<>(toDos.texts());
+    }
 
     @Override
     public SelenideElement getToDoByName(String taskName) {

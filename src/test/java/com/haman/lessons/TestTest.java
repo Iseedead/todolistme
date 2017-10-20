@@ -8,6 +8,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import static com.codeborne.selenide.Selenide.page;
+import static util.Util.isAlphabetical;
 
 public class TestTest extends BaseTest {
 
@@ -68,6 +69,21 @@ public class TestTest extends BaseTest {
         Assert.assertTrue(cPanel.getToDoByName(taskName).isDisplayed());
         cPanel.deleteTodoByName(taskName);
         Assert.assertTrue(cPanel.getCompletes().isEmpty());
+    }
+
+    @Test(description = "Sort Test")
+    public void sortToDosTest() throws InterruptedException {
+        MainPage mPage = page(MainPage.class);
+        Assert.assertTrue(isAlphabetical(mPage.alphabeticalSort()));
+        Assert.assertFalse(mPage.normalSort().equals(mPage.randomSort()));
+        Assert.assertFalse(mPage.randomSort().equals(mPage.randomSort()));
+        mPage.firstThree().stream()
+                .skip(3)
+                .forEach((i) -> Assert.assertEquals((i.getAttribute("class")), "moveabletodo itemdimmed"));
+
+        // This is awkward. But I need to check if Normal Sort doesn't change everything
+        // Or I can just check false equality of every Sort with Normal Sort
+        Assert.assertTrue(mPage.normalSort().equals(mPage.normalSort()));
     }
 
 }

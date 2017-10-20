@@ -12,6 +12,7 @@ public abstract class BaseTest {
     @BeforeMethod(description = "Init Chrome, go to todolistme.net")
     public void preCondition() {
         Configuration.browser = "chrome";
+        Configuration.screenshots = false;
         open("http://todolistme.net/");
     }
 
