@@ -3,18 +3,22 @@ package com.haman.lessons;
 import com.haman.lessons.core.pageObject.page.MainPage;
 import com.haman.lessons.core.pageObject.panel.listPanel.ListManagerPanel;
 import com.haman.lessons.core.pageObject.panel.taskPanel.CompletePanel;
+import com.haman.lessons.core.pageObject.panel.taskPanel.FuturePanel;
 import com.haman.lessons.core.pageObject.panel.taskPanel.ToDoPanel;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import static com.codeborne.selenide.Selenide.page;
+import static util.Util.getTomorrow;
 import static util.Util.isAlphabetical;
 
+@SuppressWarnings("ALL")
 public class TestTest extends BaseTest {
 
     private final String taskName = "New Task #1";
     private final String listName = "New List #1";
     private final String categoryName = "New Category #1";
+    private final String date = "25 March 2021";
 
     @Test(description = "Create Task")
     public void taskCreationTest() throws InterruptedException {
@@ -86,4 +90,29 @@ public class TestTest extends BaseTest {
         Assert.assertTrue(mPage.normalSort().equals(mPage.normalSort()));
     }
 
+    @Test(description = "Tomorrow Field Functionality Test")
+    public void tomorrowTaskTest() throws InterruptedException {
+        MainPage mPage = page(MainPage.class);
+        FuturePanel fPanel = page(FuturePanel.class);
+        CompletePanel cPanel = page(CompletePanel.class);
+        fPanel.showMore();
+        mPage.createNewTask(taskName);
+        fPanel.moveTaskToTomorrow(taskName);
+        Assert.assertEquals(fPanel.tomorrowDateOf(taskName), getTomorrow());
+        fPanel.completeTask(taskName);
+        Assert.assertTrue(cPanel.getToDoByName(taskName).isDisplayed());
+    }
+
+    @Test(description = "Later Field Functionality Test")
+    public void laterTaskTest() throws InterruptedException {
+        MainPage mPage = page(MainPage.class);
+        FuturePanel fPanel = page(FuturePanel.class);
+        CompletePanel cPanel = page(CompletePanel.class);
+        mPage.createNewTask(taskName);
+        fPanel.moveTaskToLater(taskName, date);
+        fPanel.showMore();
+        Assert.assertEquals(fPanel.tomorrowDateOf(taskName), date);
+        fPanel.completeTask(taskName);
+        Assert.assertTrue(cPanel.getToDoByName(taskName).isDisplayed());
+    }
 }

@@ -6,10 +6,7 @@ import com.haman.lessons.core.pageObject.panel.listPanel.ListManagerPanel;
 import io.qameta.allure.Step;
 import org.openqa.selenium.support.FindBy;
 
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.page;
@@ -32,7 +29,7 @@ public class ToDoPanel implements ToDoListPanelable {
         return toDos.filter(text(taskName)).shouldHaveSize(1).first();
     }
 
-    @Step("Completing Task: {taskName}")
+    @Step("Completing Task in basic ToDos: {taskName}")
     public void completeTask(String taskName) {
         getToDoByName(taskName).$("input").click();
     }
