@@ -1,18 +1,14 @@
 package com.haman.lessons;
 
 import com.haman.lessons.core.pageObject.page.MainPage;
-import com.haman.lessons.core.pageObject.panel.listPanel.ListManagerPanel;
-import com.haman.lessons.core.pageObject.panel.taskPanel.CompletePanel;
-import com.haman.lessons.core.pageObject.panel.taskPanel.FuturePanel;
-import com.haman.lessons.core.pageObject.panel.taskPanel.ToDoPanel;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import static com.codeborne.selenide.Selenide.page;
+import static com.codeborne.selenide.Selenide.sleep;
 import static util.Util.getTomorrow;
 import static util.Util.isAlphabetical;
 
-@SuppressWarnings("ALL")
 public class TestTest extends BaseTest {
 
     private final String taskName = "New Task #1";
@@ -22,97 +18,94 @@ public class TestTest extends BaseTest {
 
     @Test(description = "Create Task")
     public void taskCreationTest() throws InterruptedException {
-        page(MainPage.class).createNewTask(taskName);
-        Assert.assertTrue(page(ToDoPanel.class).getToDoByName(taskName).isDisplayed());
+        MainPage page = page(MainPage.class);
+        page.getToDoPanel().createTask(taskName);
+        Assert.assertTrue(page.getToDoPanel().getElementByName(taskName).isDisplayed());
     }
 
     @Test(description = "Complete Task")
     public void taskCompletionTest() throws InterruptedException {
-        page(MainPage.class).createNewTask(taskName);
-        page(ToDoPanel.class).completeTask(taskName);
-        Assert.assertTrue(page(CompletePanel.class).getToDoByName(taskName).isDisplayed());
+        MainPage page = page(MainPage.class);
+        page.getToDoPanel().createTask(taskName);
+        page.getToDoPanel().completeTask(taskName);
+        Assert.assertTrue(page.getCompletePanel().getElementByName(taskName).isDisplayed());
     }
 
     @Test(description = "Create Category")
     public void categoryCreationTest() throws InterruptedException {
-        page(MainPage.class).createNewCategory(categoryName);
-        Assert.assertTrue(page(ListManagerPanel.class).getNodeByName(categoryName).isDisplayed());
+        MainPage page = page(MainPage.class);
+        page.getListPanel().createNewCategory(categoryName);
+        Assert.assertTrue(page.getListPanel().getElementByName(categoryName).isDisplayed());
     }
 
     @Test(description = "Create List")
     public void listCreationTest() throws InterruptedException {
-        page(MainPage.class).createNewList(listName);
-        Assert.assertTrue(page(ListManagerPanel.class).getNodeByName(listName).isDisplayed());
+        MainPage page = page(MainPage.class);
+        page.getListPanel().createNewList(listName);
+        Assert.assertTrue(page.getListPanel().getElementByName(listName).isDisplayed());
     }
 
     @Test(description = "Move List to Category")
     public void listMovingTest() throws InterruptedException {
-        MainPage mPage = page(MainPage.class);
-        ListManagerPanel lmPanel = page(ListManagerPanel.class);
-        mPage.createNewCategory(categoryName);
-        mPage.createNewList(listName);
-        lmPanel.moveListToCategory(listName, categoryName);
-        Assert.assertEquals(lmPanel.containingCategory(listName), categoryName);
+        MainPage page = page(MainPage.class);
+        page.getListPanel().createNewCategory(categoryName);
+        page.getListPanel().createNewList(listName);
+        page.getListPanel().moveListToCategory(listName, categoryName);
+        Assert.assertEquals(page.getListPanel().containingCategory(listName), categoryName);
     }
 
     @Test(description = "Base functionality test")
     public void toDoListIntegrationTest() throws InterruptedException {
-        CompletePanel cPanel = page(CompletePanel.class);
-        MainPage mPage = page(MainPage.class);
-        ListManagerPanel lmPanel = page(ListManagerPanel.class);
-        ToDoPanel tdPanel = page(ToDoPanel.class);
-        mPage.createNewCategory(categoryName);
-        mPage.createNewList(listName);
-        lmPanel.moveListToCategory(listName, categoryName);
-        lmPanel.goToList("Today's Tasks");
-        mPage.createNewTask(taskName);
-        tdPanel.moveToList(taskName, listName);
-        lmPanel.goToList(listName);
-        Assert.assertTrue(tdPanel.getToDoByName(taskName).isDisplayed());
-        tdPanel.completeTask(taskName);
-        Assert.assertTrue(cPanel.getToDoByName(taskName).isDisplayed());
-        cPanel.deleteTodoByName(taskName);
-        Assert.assertTrue(cPanel.getCompletes().isEmpty());
+        MainPage page = page(MainPage.class);
+        page.getListPanel().createNewCategory(categoryName);
+        page.getListPanel().createNewList(listName);
+        page.getListPanel().moveListToCategory(listName, categoryName);
+        page.getListPanel().goToList("Today's Tasks");
+        page.getToDoPanel().createTask(taskName);
+        page.getListPanel().moveToList(taskName, listName);
+        page.getListPanel().goToList(listName);
+        Assert.assertTrue(page.getToDoPanel().getElementByName(taskName).isDisplayed());
+        page.getToDoPanel().completeTask(taskName);
+        Assert.assertTrue(page.getCompletePanel().getElementByName(taskName).isDisplayed());
+        page.getCompletePanel().deleteTodoByName(taskName);
+        Assert.assertTrue(page.getCompletePanel().getCompletes().isEmpty());
     }
 
     @Test(description = "Sort Test")
     public void sortToDosTest() throws InterruptedException {
-        MainPage mPage = page(MainPage.class);
-        Assert.assertTrue(isAlphabetical(mPage.alphabeticalSort()));
-        Assert.assertFalse(mPage.normalSort().equals(mPage.randomSort()));
-        Assert.assertFalse(mPage.randomSort().equals(mPage.randomSort()));
-        mPage.firstThree().stream()
+        MainPage page = page(MainPage.class);
+        Assert.assertTrue(isAlphabetical(page.getToDoPanel().alphabeticalSort()));
+        Assert.assertFalse(page.getToDoPanel().randomSort().equals(page.getToDoPanel().normalSort()));
+        Assert.assertFalse(page.getToDoPanel().randomSort().equals(page.getToDoPanel().randomSort()));
+        page.getToDoPanel().firstThree().stream()
                 .skip(3)
                 .forEach((i) -> Assert.assertEquals((i.getAttribute("class")), "moveabletodo itemdimmed"));
 
         // This is awkward. But I need to check if Normal Sort doesn't change everything
         // Or I can just check false equality of every Sort with Normal Sort
-        Assert.assertTrue(mPage.normalSort().equals(mPage.normalSort()));
+        Assert.assertTrue(page.getToDoPanel().normalSort().equals(page.getToDoPanel().normalSort()));
     }
 
     @Test(description = "Tomorrow Field Functionality Test")
     public void tomorrowTaskTest() throws InterruptedException {
-        MainPage mPage = page(MainPage.class);
-        FuturePanel fPanel = page(FuturePanel.class);
-        CompletePanel cPanel = page(CompletePanel.class);
-        fPanel.showMore();
-        mPage.createNewTask(taskName);
-        fPanel.moveTaskToTomorrow(taskName);
-        Assert.assertEquals(fPanel.tomorrowDateOf(taskName), getTomorrow());
-        fPanel.completeTask(taskName);
-        Assert.assertTrue(cPanel.getToDoByName(taskName).isDisplayed());
+        MainPage page = page(MainPage.class);
+        page.getFuturePanel().showMore();
+        page.getToDoPanel().createTask(taskName);
+        page.getFuturePanel().moveTaskToTomorrow(taskName);
+        sleep(3000);
+        Assert.assertEquals(page.getFuturePanel().tomorrowDateOf(taskName), getTomorrow());
+        page.getFuturePanel().completeTask(taskName);
+        Assert.assertTrue(page.getCompletePanel().getElementByName(taskName).isDisplayed());
     }
 
     @Test(description = "Later Field Functionality Test")
     public void laterTaskTest() throws InterruptedException {
-        MainPage mPage = page(MainPage.class);
-        FuturePanel fPanel = page(FuturePanel.class);
-        CompletePanel cPanel = page(CompletePanel.class);
-        mPage.createNewTask(taskName);
-        fPanel.moveTaskToLater(taskName, date);
-        fPanel.showMore();
-        Assert.assertEquals(fPanel.tomorrowDateOf(taskName), date);
-        fPanel.completeTask(taskName);
-        Assert.assertTrue(cPanel.getToDoByName(taskName).isDisplayed());
+        MainPage page = page(MainPage.class);
+        page.getToDoPanel().createTask(taskName);
+        page.getFuturePanel().moveTaskToLater(taskName, date);
+        page.getFuturePanel().showMore();
+        Assert.assertEquals(page.getFuturePanel().tomorrowDateOf(taskName), date);
+        page.getFuturePanel().completeTask(taskName);
+        Assert.assertTrue(page.getCompletePanel().getElementByName(taskName).isDisplayed());
     }
 }
